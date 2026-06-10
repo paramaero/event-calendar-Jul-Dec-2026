@@ -1,148 +1,147 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Event Planning Calendar</title>
+<title>Aerospace Activity Calendar</title>
 <style>
-    body {
-        font-family: Arial, sans-serif;
-        background: #f4f6f9;
-        margin: 20px;
-    }
-    h2 {
-        text-align: center;
-    }
-    table {
-        width: 100%;
-        border-collapse: collapse;
-        background: white;
-    }
-    th, td {
-        border: 1px solid #ccc;
-        padding: 10px;
-        text-align: left;
-    }
-    th {
-        background: #0078d4;
-        color: white;
-    }
-    textarea {
-        width: 100%;
-        height: 60px;
-    }
-    .controls {
-        margin-bottom: 15px;
-        text-align: center;
-    }
-    button {
-        margin: 5px;
-        padding: 10px 15px;
-        border: none;
-        background: #0078d4;
-        color: white;
-        border-radius: 5px;
-        cursor: pointer;
-    }
-    button:hover {
-        background: #005fa3;
-    }
-    .readonly textarea {
-        background: #f0f0f0;
-        pointer-events: none;
-    }
+body { font-family: Arial; background:#f4f6f9; margin:20px;}
+h2 { text-align:center;}
+table { width:100%; border-collapse:collapse; background:white;}
+th,td { border:1px solid #ccc; padding:8px;}
+th { background:#0078d4; color:white;}
+textarea { width:100%; height:70px;}
+.readonly textarea { background:#eee; pointer-events:none;}
+.controls { text-align:center; margin-bottom:10px;}
+button { padding:8px 12px; margin:5px; background:#0078d4; color:white; border:none; border-radius:5px;}
 </style>
 </head>
 
 <body>
 
-<h2>📅 Event Planning Calendar</h2>
+<h2>Final Aerospace Activity Calendar (Jul–Dec 2026)</h2>
 
 <div class="controls">
-    <button onclick="toggleEdit()">Toggle Edit/View</button>
-    <button onclick="downloadHTML()">Download Updated File</button>
-    <button onclick="clearData()">Reset</button>
+<button onclick="toggleEdit()">Toggle Edit/View</button>
+<button onclick="downloadHTML()">Download Updated File</button>
+<button onclick="clearData()">Reset</button>
 </div>
 
 <table id="calendarTable">
-    <thead>
-        <tr>
-            <th>Date</th>
-            <th>Day</th>
-            <th>Event / Task</th>
-        </tr>
-    </thead>
-    <tbody id="calendarBody"></tbody>
+<thead>
+<tr>
+<th>#</th>
+<th>Date(s)</th>
+<th>Event</th>
+<th>Nature</th>
+<th>Resource</th>
+<th>Coordinator</th>
+<th>Metric</th>
+</tr>
+</thead>
+
+<tbody id="calendarBody"></tbody>
 </table>
 
 <script>
-const daysInMonth = 30;
+
 let isEditable = true;
 
-function generateCalendar() {
-    const tbody = document.getElementById("calendarBody");
-    tbody.innerHTML = "";
+const data = [
+["1","Jun-13","PAC Meeting","Department Meeting","—","HoD","5.6,7.1"],
+["2","Jun 23–24","BoS Meeting","Academic","Industry Experts","HoD","1.2,1.8"],
+["3","Jul 6–7","OBE CO–PO Mapping","Internal","OBE Experts","Dr. Hariprasad","1.1,5.4"],
+["4","Jul 13–17","FDP – Next-Gen Materials","FDP","AICTE","Dr. Paramaguru & Dr. Dheeraj","2.3"],
+["5","Jul-20","LMS Deployment","Internal","ICT Team","Prof. Naveenkumar","5.2"],
+["6","Jul-27","Internship Orientation","Seminar","Industry","Placement Coord.","1.4,8.4"],
+["7","Aug 3–5,8","UAV Certification (P1)","VAP","UAV Experts","Dr. Hariprasad","1.10,1.5"],
+["8","Aug 8 & 29","Design Elements (P1)","VAP","—","Dr. Shrishail","1.1"],
+["9","Aug 10–14","CFD Training","Workshop","Industry","Dr. Rajasekar","5.1,5.3"],
+["10","Aug-14","Lecture – Propulsion","Lecture","—","Dr. Dheeraj","5.3"],
+["11","Aug-18","Lecture – Aircraft Structures","Lecture","HAL","Dr. Kanu Priya","5.3"],
+["12","Aug-22","Research Workshop","Internal","Faculty","Dr. Shrishail","9.1"],
+["13","Aug-25","NSQF Course","Course","NSDC","Dr. Sundeep","1.5"],
+["14","Sep-02","IV – HAL","IV","HAL","Dept Team","1.4,5.3"],
+["15","Sep-04","Lecture – Space Missions","Lecture","ISRO","Faculty","5.3"],
+["16","Sep 5,12,26","VAP Continuation","VAP","—","Dr. Shrishail","1.1"],
+["17","Sep 10–11","Hackathon-1","Hackathon","Startups","Prof. Naveen","6.1,9.7"],
+["18","Sep-16","IPR Workshop","Workshop","IPR Cell","Dr. Shrishail","9.6"],
+["19","Sep-20","Value Education","Lecture","Faculty","Dr. Dheeraj","6.3"],
+["20","Sep-24","Rocketry Club","Club","Faculty","Club Coord.","6.1"],
+["21","Oct-03","VAP Final","VAP","—","Faculty","1.1"],
+["22","Oct 5–7","TECHSYMP 2026","Fest","Multi Org","Dept Team","6.1,8.6"],
+["23","Oct 8–10","Club Events","Club","Alumni","Club Coord.","6.1"],
+["24","Oct 14–15","Cultural Fest","Cultural","Students","Coord.","6.2"],
+["25","Oct-22","Digital Twin Lecture","Lecture","Industry","Faculty","5.3"],
+["26","Oct-27","Mentorship Review-1","Mentorship","Faculty","Mentor Coord.","5.9"],
+["27","Nov-02","STEM Outreach","Outreach","NGO","NSS","6.4,10.1"],
+["28","Nov 2–6","FDP AI/ML","FDP","Industry","Prof. Shashi","2.3"],
+["29","Nov 6–7","UAV Training","Revenue","Industry","Dr. Srishail","9.7"],
+["30","Nov-16","Lecture – Aerodynamics","Lecture","Expert","Faculty","5.3"],
+["31","Nov 20–21","Hackathon-2","Hackathon","Industry","Dept","6.1,9.7"],
+["32","Nov-25","Sustainability Event","Event","Faculty","NSS","10.2"],
+["33","Dec-03","IV – ISRO/NAL","IV","ISRO","Faculty","1.4,5.3"],
+["34","Dec 7–10","FEM Course","VAP","Industry","Dr. Dheeraj","1.1"],
+["35","Dec-12","Urban Air Mobility","Lecture","Expert","Faculty","5.3"],
+["36","Dec-15","Rural Outreach","Outreach","NGO","NSS","10.1"],
+["37","Dec-18","SDG Workshop","Workshop","Faculty","Dr. Allamaprabhu","1.9"],
+["38","Dec-20","BoS Meeting","Academic","Industry","HoD","1.2,1.8"],
+["39","Dec-22","Mentorship Review-2","Mentorship","Faculty","Coord.","5.9"]
+];
 
-    for (let i = 1; i <= daysInMonth; i++) {
-        let savedData = localStorage.getItem("day_" + i) || "";
+function loadTable(){
+const tbody=document.getElementById("calendarBody");
+tbody.innerHTML="";
 
-        const row = document.createElement("tr");
+data.forEach((row,i)=>{
+let saved=localStorage.getItem("row_"+i) || row.join(" | ");
 
-        row.innerHTML = `
-            <td>${i}</td>
-            <td>Day ${i}</td>
-            <td>
-                <textarea onchange="saveData(${i}, this.value)">${savedData}</textarea>
-            </td>
-        `;
-        tbody.appendChild(row);
-    }
+let tr=document.createElement("tr");
 
-    applyMode();
+tr.innerHTML = `
+<td>${row[0]}</td>
+<td>${row[1]}</td>
+<td colspan="5">
+<textarea onchange="save(${i},this.value)">${saved}</textarea>
+</td>
+`;
+
+tbody.appendChild(tr);
+});
+
+applyMode();
 }
 
-function saveData(day, value) {
-    localStorage.setItem("day_" + day, value);
+function save(i,val){
+localStorage.setItem("row_"+i,val);
 }
 
-function toggleEdit() {
-    isEditable = !isEditable;
-    applyMode();
+function toggleEdit(){
+isEditable=!isEditable;
+applyMode();
 }
 
-function applyMode() {
-    const table = document.getElementById("calendarTable");
-    if (!isEditable) {
-        table.classList.add("readonly");
-    } else {
-        table.classList.remove("readonly");
-    }
+function applyMode(){
+document.getElementById("calendarTable")
+.classList.toggle("readonly",!isEditable);
 }
 
-function clearData() {
-    if (confirm("Clear all data?")) {
-        localStorage.clear();
-        generateCalendar();
-    }
+function clearData(){
+localStorage.clear();
+loadTable();
 }
 
-function downloadHTML() {
-    let htmlContent = document.documentElement.outerHTML;
-
-    // Inject current data into HTML
-    for (let i = 1; i <= daysInMonth; i++) {
-        let value = localStorage.getItem("day_" + i) || "";
-        const regex = new RegExp(`<textarea[^>]*>(.*?)</textarea>`);
-        htmlContent = htmlContent.replace(regex, `<textarea>${value}</textarea>`);
-    }
-
-    const blob = new Blob([htmlContent], { type: "text/html" });
-    const a = document.createElement("a");
-    a.href = URL.createObjectURL(blob);
-    a.download = "updated-event-calendar.html";
-    a.click();
+function downloadHTML(){
+let html=document.documentElement.outerHTML;
+let blob=new Blob([html],{type:"text/html"});
+let a=document.createElement("a");
+a.href=URL.createObjectURL(blob);
+a.download="updated-calendar.html";
+a.click();
 }
 
-generateCalendar();
+loadTable();
+
 </script>
 
 </body>
